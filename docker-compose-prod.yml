@@ -1,0 +1,34 @@
+
+services:
+  decacem:
+    hostname: localhost
+    build:
+      context: .
+      target: production-stage
+    restart: always
+    ports:
+      - 3333:80
+    networks:
+      - decacem-net
+      - proxy
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/dist
+    environment:
+      - NODE_ENV=production
+    #command: bun run dev
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=proxy"
+      - "traefik.http.routers.myspa-secure.entrypoints=websecure"
+      - "traefik.http.routers.myspa-secure.rule=Host(`cdechets.cacem.fr`)"
+      - "traefik.http.services.myspa-secure.loadbalancer.server.port=80"
+      - "traefik.http.routers.myspa-secure.tls=true"
+      - "traefik.http.routers.myspa-secure.tls.certresolver=myresolver"
+    
+
+networks:
+  decacem-net:
+  proxy:
+     external: true

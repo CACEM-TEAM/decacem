@@ -1,0 +1,22 @@
+
+services:
+  decacem:
+    hostname: localhost
+    build:
+      context: .
+      target: production-stage
+    restart: always
+    ports:
+      - 3333:80
+    networks:
+      - decacem-net
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/dist
+    environment:
+      - NODE_ENV=production
+    #command: bun run dev
+
+networks:
+  decacem-net:

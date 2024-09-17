@@ -1,0 +1,8 @@
+sssd
+node_modules
+archives
+docker-entrypoint-apache.sh
+docker-entrypoint.sh
+'docker-entrypoint copy.sh'
+Dockerfile
+Dockerfile.deb11
