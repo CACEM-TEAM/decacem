@@ -1,0 +1,145 @@
+:root {
+  font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif!important;
+  line-height: 1.5!important;
+  font-weight: 400!important;
+  --el-color-primary: #78aaa6!important;
+  --vc-header-arrow-color: #ffffff!important;
+  --vc-header-title-color: #ffffff!important;
+  --vc-text-sm: 14px!important;
+  --vc-text-lg: 18px!important;
+  --vc-font-bold: 700!important;
+  --vc-font-semibold: 600!important;
+  --vc-leading-snug: 1.375!important;
+  color-scheme: light dark!important;
+  color: rgba(255, 255, 255, 0.87)!important;
+  background-color: #242424!important;
+
+  font-synthesis: none!important;
+  text-rendering: optimizeLegibility!important;
+  -webkit-font-smoothing: antialiased!important;
+  -moz-osx-font-smoothing: grayscale!important;
+  -webkit-text-size-adjust: 100%!important;
+}
+
+body {
+  margin: 0!important;
+  min-width: 340px!important;
+  min-height: 100vh!important;
+}
+
+.flex-item[data-v-7a7a37b1] {
+  padding: 0px!important;
+  border: 0px!important;
+}
+
+.vc-weekday {
+  text-align: center!important;
+  color: #5c8380!important;
+  font-size: 17px!important;
+  font-weight: 340!important;
+  line-height: 14px!important;
+  padding-top: 7px!important;
+  padding-bottom: 8px!important;
+  cursor: default!important;
+  -webkit-user-select: none!important;
+  -ms-user-select: none!important;
+  user-select: none!important;
+}
+
+.vc-header .vc-arrow {
+  display: flex!important;
+  justify-content: center!important;
+  align-items: center!important;
+  background-color: #58807d!important;
+  color: #ffffff!important; /* Couleur des flèches */
+  padding: 10px!important; /* Ajoute un peu de padding autour des flèches */
+  transition: background-color 0.3s ease!important; /* Ajoute une transition pour un effet de survol plus doux */
+  border: none!important; /* Supprime les bordures */
+}
+
+.vc-header .vc-arrow:focus {
+  outline: none !important;
+  background-color: #00000000!important;
+  color: #fff !important;
+}
+.vc-header .vc-arrow:hover {
+  background-color: #00000000!important;
+  color: #ffffff !important;
+}
+
+.vc-header .vc-arrow:hover {
+  background-color: #58807d!important; /* Couleur de fond au survol */
+  color: #000!important; /* Couleur de la flèche au survol */
+}
+
+.vc-header .vc-arrow:focus {
+  outline: none!important; /* Supprime la couleur de focus par défaut */
+  background-color: #58807d!important; /* Couleur de fond lors du focus */
+  color: #fff!important; /* Couleur de la flèche lors du focus */
+}
+
+.vc-header .vc-title {
+  color: #fff!important;
+  background-color: #58807d!important;
+  font-weight: 300!important;
+}
+
+.vc-header.is-lg {
+  font-size: var(--vc-text-lg)!important;
+}
+
+.vc-day {
+  position: relative!important;
+  z-index: 1!important;
+  color: #2f4e4c!important; /* Couleur blanche pour les jours */
+  background-color: #00000000!important; /* Couleur de fond des jours */
+  width: 40px!important; /* Largeur fixe pour les jours */
+  height: 40px!important; /* Hauteur fixe pour les jours */
+  display: flex!important;
+  justify-content: center!important;
+  align-items: center!important;
+  border-radius: 10%!important; /* Légèrement arrondi pour un effet visuel */
+  margin: 2px!important; /* Espacement entre les jours */
+  font-size: 16px!important; /* Taille du texte pour les jours */
+}
+
+.vc-day:hover {
+  background-color: #00000000!important; /* Couleur au survol des jours */
+  color: #000000!important; /* Couleur du texte au survol */
+}
+
+.vc-day.vc-selected {
+  background-color: #00000000!important; /* Couleur des jours sélectionnés */
+  color: #000000!important; /* Couleur du texte des jours sélectionnés */
+}
+
+.vc-nav-item {
+  text-align: center!important;
+  font-weight: var(--vc-font-semibold)!important;
+  line-height: var(--vc-leading-snug)!important;
+  background-color: #2f4e4c!important; /* Couleur de fond des éléments de navigation */
+  color: #ffffff!important; /* Couleur blanche pour le texte de navigation */
+  border-radius: 10px!important; /* Arrondir les éléments de navigation */
+  padding: 5px!important;
+}
+
+.vc-base-icon {
+  fill: #fff!important;
+  background-color: #58807d!important;
+  border-radius: 4px!important;
+}
+
+.vc-expanded {
+  background-color: transparent!important;
+}
+
+.modal-content {
+  box-shadow: 1px 1px 15px 5px #172d2bbf!important;
+  background-color: #ffffff!important; /* Couleur de fond des modales */
+  color: #2f4e4c!important; /* Couleur blanche pour le texte des modales */
+  border-radius: 10px!important; /* Arrondir les modales */
+}
+
+.modal-header {
+  height: 85px!important;
+}
