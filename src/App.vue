@@ -30,10 +30,10 @@ const cardC = ref(null);
 const nextButtonA = ref(null);
 const nextButtonB = ref(null);
 const nextButtonC = ref(null);
-const imagePath4 = "public/recycling.gif";
-const imagePath3 = "public/cacemlogo.png";
-const imagePath2 = "public/poubelle.gif";
-const imagePath = "public/loca.png"; 
+const imagePath4 = "recycling.gif";
+const imagePath3 = "cacemlogo.png";
+const imagePath2 = "poubelle.gif";
+const imagePath = "loca.png"; 
 const currentIndex = ref(0);
 const currentDate = ref('');
 const weekNumber = ref('');
@@ -50,7 +50,7 @@ onMounted(async () => {
 
   onMounted(async () => {
     try {
-        const response = await fetch('public/passages.json');
+        const response = await fetch('passages.json');
         if (response.ok) {
             const jsonData = await response.json();
             
