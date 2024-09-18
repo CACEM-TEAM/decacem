@@ -467,7 +467,7 @@ onUnmounted(() => {
         <div class="PR" style="margin-top: -80px;">
 <div class="logoc">
 <div id=LOGOcontainer>
-    <img  :src="imagePath3" class="img-fluid img-thumbnail lcam MKO" alt="..." style="width: 28%;margin-bottom: 18px;margin-left: -27px;">
+    <img  :src="imagePath3" class="img-fluid img-thumbnail lcam MKO" alt="..." style="width: 28%;margin-bottom: 18px;margin-left: -27px;background-color: transparent!important;">
   <div id=flip>
     <div><div>Recycler</div></div>
     <div><div>Trier</div></div>
