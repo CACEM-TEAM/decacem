@@ -22,7 +22,7 @@ services:
       - "traefik.enable=true"
       - "traefik.docker.network=proxy"
       - "traefik.http.routers.myspa-secure.entrypoints=websecure"
-      - "traefik.http.routers.myspa-secure.rule=Host(`cdechets.cacem.fr`)"
+      - "traefik.http.routers.myspa-secure.rule=Host(`collecte-dechets.cacem.fr`)"
       - "traefik.http.services.myspa-secure.loadbalancer.server.port=80"
       - "traefik.http.routers.myspa-secure.tls=true"
       - "traefik.http.routers.myspa-secure.tls.certresolver=myresolver"
