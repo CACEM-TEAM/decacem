@@ -30,10 +30,10 @@ const cardC = ref(null);
 const nextButtonA = ref(null);
 const nextButtonB = ref(null);
 const nextButtonC = ref(null);
-const imagePath4 = "recycling.gif";
-const imagePath3 = "cacemlogo.png";
-const imagePath2 = "poubelle.gif";
-const imagePath = "loca.png"; 
+const imagePath4 = "public/recycling.gif";
+const imagePath3 = "public/cacemlogo.png";
+const imagePath2 = "public/poubelle.gif";
+const imagePath = "public/loca.png"; 
 const currentIndex = ref(0);
 const currentDate = ref('');
 const weekNumber = ref('');
@@ -50,7 +50,7 @@ onMounted(async () => {
 
   onMounted(async () => {
     try {
-        const response = await fetch('passages.json');
+        const response = await fetch('public/passages.json');
         if (response.ok) {
             const jsonData = await response.json();
             
@@ -121,7 +121,7 @@ const filterData3 = () => {
         item.COMMUNE === selectedCommune.value &&
         item.QUARTIER === selectedQuartier.value &&
         item.VOIE === selectedVoie.value &&
-        item.FLUX === "ENC"
+        (item.FLUX === "DEEE" || item.FLUX === "ENC" || item.FLUX === "DV")
       );
     });
   } else {
@@ -467,7 +467,7 @@ onUnmounted(() => {
         <div class="PR" style="margin-top: -80px;">
 <div class="logoc">
 <div id=LOGOcontainer>
-    <img  :src="imagePath3" class="img-fluid img-thumbnail lcam MKO" alt="..." style="width: 28%;margin-bottom: 18px;margin-left: -27px;background-color: transparent!important;">
+    <img  :src="imagePath3" class="img-fluid img-thumbnail lcam MKO" alt="..." style="width: 28%;margin-bottom: 18px;margin-left: -27px;background-color:#00000000;">
   <div id=flip>
     <div><div>Recycler</div></div>
     <div><div>Trier</div></div>
@@ -558,6 +558,20 @@ Emballages (bac jaune)
   </div>
 </div>
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 <div class="modal fade" id="verts" tabindex="-1" aria-labelledby="bacverts" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
@@ -588,6 +602,27 @@ Emballages (bac jaune)
     </div>
   </div>
 </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 <div class="modal fade" id="jaune" tabindex="-1" aria-labelledby="bacjaune" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
@@ -987,12 +1022,12 @@ height: 100vh;
     margin-bottom: 0px;
     text-align: center;
     background-color: #58807d;
-    color: white!important;
-    border-radius: 7px;
+    color: white !important;
     padding: 9px;
     width: 300px;
     margin: auto;
-}.btn-close {
+    border-radius: 12px;}
+    .btn-close {
     --bs-btn-close-color: #58807d;
     --bs-btn-close-bg: url(data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23000'%3e%3cpath d='M.293.293a1 1 0 0 1 1.414 0L8 6.586 14.293.293a1 1 0 1 1 1.414 1.414L9.414 8l6.293 6.293a1 1 0 0 1-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 0 1-1.414-1.414L6.586 8 .293 1.707a1 1 0 0 1 0-1.414z'/%3e%3c/svg%3e);
     --bs-btn-close-opacity: 0.5;
@@ -1019,8 +1054,8 @@ height: 100vh;
     --bs-btn-bg: #58807d;
     --bs-btn-border-color: #6c757d;
     --bs-btn-hover-color: #fff;
-    --bs-btn-hover-bg: #5c636a;
-    --bs-btn-hover-border-color: #565e64;
+    --bs-btn-hover-bg: #75a6a2;
+    --bs-btn-hover-border-color: #00000000;
     --bs-btn-focus-shadow-rgb: 130, 138, 145;
     --bs-btn-active-color: #fff;
     --bs-btn-active-bg: #565e64;
