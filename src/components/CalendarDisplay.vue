@@ -48,7 +48,10 @@
              'has-collection': day.collections.length > 0
            }"
          >
-           <div class="day-number">{{ day.day }}</div>
+           <div class="day-content">
+             <div v-if="isMobile" class="day-name">{{ getShortDayName(day.date) }}</div>
+             <div class="day-number">{{ day.day }}</div>
+           </div>
            <div v-if="day.collections.length > 0" class="day-collections">
              <div
                v-for="(collection, idx) in day.collections"
@@ -65,7 +68,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
 import { Calendar, ChevronLeft, ChevronRight } from 'lucide-vue-next'
 
 const props = defineProps({
@@ -83,9 +86,43 @@ const currentDate = ref(new Date())
 const currentMonth = ref(new Date().getMonth())
 const currentYear = ref(new Date().getFullYear())
 
+// Pour le mode mobile : date de départ de la période de 2 semaines
+const startDateForWeeks = ref(new Date())
+
+// Détecter si on est sur mobile
+const isMobile = ref(window.innerWidth <= 768)
+
+// Mettre à jour la détection mobile lors du redimensionnement
+const updateMobileView = () => {
+  isMobile.value = window.innerWidth <= 768
+  if (isMobile.value && !startDateForWeeks.value) {
+    startDateForWeeks.value = new Date()
+  }
+}
+
+window.addEventListener('resize', updateMobileView)
+
 const daysOfWeek = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim']
 
 const currentMonthName = computed(() => {
+  if (isMobile.value) {
+    // Sur mobile, afficher la période (semaines)
+    const start = startDateForWeeks.value
+    const end = new Date(start)
+    end.setDate(end.getDate() + 13) // 14 jours au total (jour 0 à jour 13)
+    
+    const months = [
+      'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
+      'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'
+    ]
+    
+    if (start.getMonth() === end.getMonth()) {
+      return `${months[start.getMonth()]} ${start.getFullYear()}`
+    } else {
+      return `${months[start.getMonth()]} - ${months[end.getMonth()]} ${start.getFullYear()}`
+    }
+  }
+  
   const months = [
     'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
     'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'
@@ -115,6 +152,11 @@ const isSameDay = (date1, date2) => {
 
 const getDayOfWeekName = (date) => {
   const days = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi']
+  return days[date.getDay()]
+}
+
+const getShortDayName = (date) => {
+  const days = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam']
   return days[date.getDay()]
 }
 
@@ -178,57 +220,89 @@ const getCollectionsForDate = (date) => {
 }
 
 const calendarDays = computed(() => {
-  const year = currentYear.value
-  const month = currentMonth.value
-  
-  // Premier jour du mois
-  const firstDay = new Date(year, month, 1)
-  const lastDay = new Date(year, month + 1, 0)
-  
-  // Jour de la semaine du premier jour (0 = dimanche, on convertit pour lundi = 0)
-  let startDay = firstDay.getDay()
-  startDay = startDay === 0 ? 6 : startDay - 1
-  
-  const days = []
   const today = new Date()
+  const days = []
   
-  // Jours du mois précédent
-  const prevMonthLastDay = new Date(year, month, 0).getDate()
-  for (let i = startDay - 1; i >= 0; i--) {
-    const day = prevMonthLastDay - i
-    const date = new Date(year, month - 1, day)
-    days.push({
-      day,
-      date,
-      isCurrentMonth: false,
-      isToday: isSameDay(date, today),
-      collections: []
-    })
-  }
-  
-  // Jours du mois actuel
-  for (let day = 1; day <= lastDay.getDate(); day++) {
-    const date = new Date(year, month, day)
-    days.push({
-      day,
-      date,
-      isCurrentMonth: true,
-      isToday: isSameDay(date, today),
-      collections: getCollectionsForDate(date)
-    })
-  }
-  
-  // Jours du mois suivant pour compléter la grille
-  const remainingDays = 42 - days.length // 6 semaines * 7 jours
-  for (let day = 1; day <= remainingDays; day++) {
-    const date = new Date(year, month + 1, day)
-    days.push({
-      day,
-      date,
-      isCurrentMonth: false,
-      isToday: isSameDay(date, today),
-      collections: []
-    })
+  if (isMobile.value) {
+    // Mode mobile : afficher 2 semaines (14 jours) à partir de startDateForWeeks
+    const startDate = new Date(startDateForWeeks.value)
+    
+    // Trouver le lundi de la semaine de startDate
+    // 0 = dimanche, 1 = lundi, etc.
+    const startDayOfWeek = startDate.getDay()
+    // Calculer le décalage pour arriver au lundi
+    // Si dimanche (0), on recule de 6 jours
+    // Sinon, on recule de (jour - 1) jours
+    const mondayOffset = startDayOfWeek === 0 ? -6 : 1 - startDayOfWeek
+    
+    const firstDay = new Date(startDate)
+    firstDay.setDate(startDate.getDate() + mondayOffset)
+    firstDay.setHours(0, 0, 0, 0) // Normaliser l'heure
+    
+    // Générer 14 jours (2 semaines complètes)
+    for (let i = 0; i < 14; i++) {
+      const date = new Date(firstDay)
+      date.setDate(firstDay.getDate() + i)
+      
+      days.push({
+        day: date.getDate(),
+        date,
+        isCurrentMonth: true, // Toujours afficher les jours en mode mobile
+        isToday: isSameDay(date, today),
+        collections: getCollectionsForDate(date)
+      })
+    }
+  } else {
+    // Mode desktop : afficher le mois complet
+    const year = currentYear.value
+    const month = currentMonth.value
+    
+    // Premier jour du mois
+    const firstDay = new Date(year, month, 1)
+    const lastDay = new Date(year, month + 1, 0)
+    
+    // Jour de la semaine du premier jour (0 = dimanche, on convertit pour lundi = 0)
+    let startDay = firstDay.getDay()
+    startDay = startDay === 0 ? 6 : startDay - 1
+    
+    // Jours du mois précédent
+    const prevMonthLastDay = new Date(year, month, 0).getDate()
+    for (let i = startDay - 1; i >= 0; i--) {
+      const day = prevMonthLastDay - i
+      const date = new Date(year, month - 1, day)
+      days.push({
+        day,
+        date,
+        isCurrentMonth: false,
+        isToday: isSameDay(date, today),
+        collections: []
+      })
+    }
+    
+    // Jours du mois actuel
+    for (let day = 1; day <= lastDay.getDate(); day++) {
+      const date = new Date(year, month, day)
+      days.push({
+        day,
+        date,
+        isCurrentMonth: true,
+        isToday: isSameDay(date, today),
+        collections: getCollectionsForDate(date)
+      })
+    }
+    
+    // Jours du mois suivant pour compléter la grille
+    const remainingDays = 42 - days.length // 6 semaines * 7 jours
+    for (let day = 1; day <= remainingDays; day++) {
+      const date = new Date(year, month + 1, day)
+      days.push({
+        day,
+        date,
+        isCurrentMonth: false,
+        isToday: isSameDay(date, today),
+        collections: []
+      })
+    }
   }
   
   return days
@@ -257,20 +331,38 @@ const getFluxLabel = (flux) => {
 }
 
 const previousMonth = () => {
-  if (currentMonth.value === 0) {
-    currentMonth.value = 11
-    currentYear.value--
+  if (isMobile.value) {
+    // Sur mobile, reculer de 2 semaines
+    const newDate = new Date(startDateForWeeks.value)
+    newDate.setDate(newDate.getDate() - 14)
+    newDate.setHours(0, 0, 0, 0)
+    startDateForWeeks.value = newDate
   } else {
-    currentMonth.value--
+    // Sur desktop, reculer d'un mois
+    if (currentMonth.value === 0) {
+      currentMonth.value = 11
+      currentYear.value--
+    } else {
+      currentMonth.value--
+    }
   }
 }
 
 const nextMonth = () => {
-  if (currentMonth.value === 11) {
-    currentMonth.value = 0
-    currentYear.value++
+  if (isMobile.value) {
+    // Sur mobile, avancer de 2 semaines
+    const newDate = new Date(startDateForWeeks.value)
+    newDate.setDate(newDate.getDate() + 14)
+    newDate.setHours(0, 0, 0, 0)
+    startDateForWeeks.value = newDate
   } else {
-    currentMonth.value++
+    // Sur desktop, avancer d'un mois
+    if (currentMonth.value === 11) {
+      currentMonth.value = 0
+      currentYear.value++
+    } else {
+      currentMonth.value++
+    }
   }
 }
 
@@ -279,6 +371,23 @@ watch(() => props.selectedAddress, () => {
   const now = new Date()
   currentMonth.value = now.getMonth()
   currentYear.value = now.getFullYear()
+  // Sur mobile, réinitialiser à aujourd'hui
+  if (isMobile.value) {
+    startDateForWeeks.value = new Date(now)
+  }
+})
+
+// Initialiser la date de départ mobile à aujourd'hui
+onMounted(() => {
+  const now = new Date()
+  // Initialiser à aujourd'hui, la logique de calendarDays trouvera automatiquement le lundi
+  startDateForWeeks.value = new Date(now)
+  startDateForWeeks.value.setHours(0, 0, 0, 0)
+})
+
+// Nettoyer l'event listener
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', updateMobileView)
 })
 </script>
 
@@ -442,21 +551,11 @@ watch(() => props.selectedAddress, () => {
   background: var(--bg-primary);
 }
 
-<<<<<<< HEAD
-=======
-  .calendar-day.today {
-    border-color: #5a818f5e!important;
-    background: linear-gradient(135deg, #b7c6cdfc 0%, rgb(217 253 255 / 10%) 100%)!important;
-    font-weight: 700;
-    box-shadow: var(--shadow);
-}
-  
->>>>>>> a93e9d5e87b2adb9824b8934f5048f0ccea8f3b2
 .calendar-day.has-collection {
   border-color: var(--primary);
   border-width: 1.5px;
-  background: linear-gradient(135deg, rgba(249, 115, 22, 0.1) 0%, rgba(251, 146, 60, 0.06) 100%);
-  box-shadow: 0 2px 6px rgba(249, 115, 22, 0.15);
+  /* background: linear-gradient(135deg, rgb(255 255 255 / 10%) 0%, rgba(251, 146, 60, 0.06) 100%); */
+  box-shadow: 0 2px 6px rgb(104 144 168 / 41%);
 }
 
 /* Style pour la date du jour - Design moderne avec tons bleu/turquoise */
@@ -516,6 +615,13 @@ watch(() => props.selectedAddress, () => {
   transform: translateY(-3px) scale(1.02);
 }
 
+.day-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
 .day-number {
   font-weight: 600;
   font-size: 0.8rem;
@@ -562,8 +668,8 @@ watch(() => props.selectedAddress, () => {
 }
 
 .flux-deee {
-  background: #f97316;
-  color: #f97316;
+  background: #000000;
+  color: #000000;
 }
 
 .flux-dv {
@@ -572,8 +678,8 @@ watch(() => props.selectedAddress, () => {
 }
 
 .flux-enc {
-  background: #ffa502;
-  color: #ffa502;
+  background: #FFB800;
+  color: #FFB800;
 }
 
 .flux-om {
@@ -582,8 +688,8 @@ watch(() => props.selectedAddress, () => {
 }
 
 .flux-rs {
-  background: #ff4757;
-  color: #ff4757;
+  background: #97001e;
+  color: #97001e;
 }
 
 .flux-default {
@@ -620,20 +726,106 @@ watch(() => props.selectedAddress, () => {
   }
   
   .calendar-header {
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
+  }
+  
+  /* Sur mobile : 3 colonnes au lieu de 7 pour plus de lisibilité */
+  .calendar-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+  }
+  
+  /* Masquer les en-têtes de jours sur mobile (trop d'encombrement) */
+  .day-header {
+    display: none;
   }
   
   .calendar-day {
-    padding: 0.125rem;
+    padding: 0.75rem 0.5rem;
+    min-height: 100px;
+    aspect-ratio: 0.85;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .day-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    width: 100%;
+  }
+  
+  .day-name {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    opacity: 0.8;
   }
   
   .day-number {
-    font-size: 0.7rem;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--text-primary);
   }
   
+  /* Points de couleur beaucoup plus gros et visibles sur mobile */
   .collection-dot {
-    width: 6px;
-    height: 6px;
+    width: 14px;
+    height: 14px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3), 0 0 0 2px rgba(255, 255, 255, 0.95);
+    border: 2px solid rgba(255, 255, 255, 0.95);
+  }
+  
+  .day-collections {
+    gap: 0.35rem;
+    padding-top: 0.3rem;
+  }
+  
+  /* Améliorer la légende sur mobile */
+  .legend-top {
+    padding: 0.85rem 0.85rem;
+  }
+  
+  .legend-item {
+    font-size: 0.8rem;
+    gap: 0.5rem;
+    line-height: 1.5;
+    padding: 0.25rem 0;
+  }
+  
+  .legend-color {
+    width: 18px;
+    height: 18px;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+    border: 1.5px solid rgba(255, 255, 255, 0.8);
+  }
+  
+  .legend-items {
+    gap: 0.4rem;
+    flex-direction: column;
+  }
+  
+  /* Style spécial pour le jour actuel sur mobile */
+  .calendar-day.today {
+    border-width: 3px !important;
+    min-height: 105px;
+  }
+  
+  .calendar-day.today .day-number {
+    font-size: 1.4rem;
+  }
+  
+  .calendar-day.today .day-name {
+    font-weight: 700;
+    color: var(--primary);
+    opacity: 1;
   }
 }
 </style>
