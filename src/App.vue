@@ -187,19 +187,21 @@ onMounted(() => {
 .app-container {
   min-height: 100vh;
   position: relative;
+  z-index: 1;
 }
 
-/* Header épuré */
+/* Header épuré et élégant */
 .app-header {
   position: sticky;
   top: 0;
-  padding: 1.25rem 1.5rem;
-  background: #ffffff;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  padding: 0.75rem 1.5rem;
+  background: rgba(255, 255, 255, 0.85);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
   z-index: 100;
-  backdrop-filter: blur(10px);
-  transition: box-shadow 0.3s ease;
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
+  transition: all 0.2s ease;
 }
 
 .header-content {
@@ -221,120 +223,60 @@ onMounted(() => {
 }
 
 .app-title {
-  font-size: 2em;
-  font-weight: 480;
+  font-size: 1.5rem;
+  font-weight: 600;
   margin: 0;
-  color: #565656;
-  line-height: 1.3;
+  color: #2c3e50;
+  line-height: 1.2;
   display: flex;
   align-items: center;
-  gap: 0.15em;
-  letter-spacing: -0.05em;
+  gap: 0.25em;
+  letter-spacing: -0.02em;
 }
 
 .title-letter-with-logo {
   position: relative;
   display: inline-block;
   line-height: 1;
-  animation: fadeInSlide 0.8s ease-out;
 }
 
 .title-logo {
   position: absolute;
-  left: -0.9em;
-  top: 56%;
+  left: -0.75em;
+  top: 50%;
   transform: translateY(-50%);
-  width: 1.2em;
-  height: 1.2em;
+  width: 1em;
+  height: 1em;
   object-fit: contain;
   z-index: 1;
-  opacity: 0.9;
-  animation: logoFloat 8s ease-in-out infinite;
+  opacity: 0.95;
 }
 
 .title-letter {
   position: relative;
   display: inline-block;
   z-index: 2;
-  letter-spacing: -0.05em;
-  animation: letterFadeIn 0.6s ease-out forwards, letterFloat 8s ease-in-out infinite;
-  opacity: 0;
+  letter-spacing: -0.02em;
+  opacity: 1;
 }
 
 .title-letter:hover {
-  transform: translateY(-3px);
+  color: var(--primary);
+  transition: color 0.2s ease;
 }
 
-.title-letter-with-logo .title-letter:nth-child(2) { 
-  animation-delay: 0.1s, 0.7s; 
-}
-.title-letter-with-logo .title-letter:nth-child(3) { 
-  animation-delay: 0.2s, 0.8s; 
-}
-.title-letter-with-logo .title-letter:nth-child(4) { 
-  animation-delay: 0.3s, 0.9s; 
-}
-.title-letter-with-logo .title-letter:nth-child(5) { 
-  animation-delay: 0.4s, 1s; 
-}
-.title-letter-with-logo .title-letter:nth-child(6) { 
-  animation-delay: 0.5s, 1.1s; 
-}
 
 .title-rest {
   display: inline-block;
 }
 
-/* Animations pour le titre */
-@keyframes fadeInSlide {
-  from {
-    opacity: 0;
-    transform: translateX(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@keyframes logoFloat {
-  0%, 100% {
-    transform: translateY(-50%) translateY(0) rotate(0deg);
-  }
-  25% {
-    transform: translateY(-50%) translateY(-3px) rotate(2deg);
-  }
-  50% {
-    transform: translateY(-50%) translateY(-5px) rotate(0deg);
-  }
-  75% {
-    transform: translateY(-50%) translateY(-3px) rotate(-2deg);
-  }
-}
-
-@keyframes letterFadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes letterFloat {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-3px);
-  }
-}
-
 .app-subtitle {
-  font-size: 0.875rem;
+  font-size: 0.75rem;
   color: var(--text-secondary);
-  margin: 0.25rem 0 0 0;
+  margin: 0.125rem 0 0 0;
   font-weight: 400;
+  opacity: 0.7;
+  letter-spacing: 0.01em;
 }
 
 .main-content {
@@ -355,13 +297,13 @@ onMounted(() => {
 }
 
 .search-card {
-  background: #ffffff;
+  background: #ffffff99;
   border-radius: 12px;
   padding: 1.5rem;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   border: 1px solid var(--border);
   position: relative;
-  z-index: 1;
+  z-index: 10;
 }
 
 .search-header {
@@ -442,7 +384,7 @@ onMounted(() => {
 
 .map-card,
 .calendar-card {
-  background: #ffffff;
+  background: #ffffff9d;
   border-radius: 12px;
   padding: 1.5rem;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);

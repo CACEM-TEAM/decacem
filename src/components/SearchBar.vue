@@ -172,6 +172,7 @@ const clearSearch = () => {
 .search-container {
   position: relative;
   width: 100%;
+  z-index: 1000;
 }
 
 .search-wrapper {
@@ -183,6 +184,7 @@ const clearSearch = () => {
   border-radius: 8px;
   padding: 0.75rem 1rem;
   transition: border-color 0.2s;
+  z-index: 1;
 }
 
 .search-wrapper:focus-within {
@@ -244,13 +246,14 @@ const clearSearch = () => {
   right: 0;
   background: #ffffff;
   border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.05);
   max-height: 300px;
   overflow-y: auto;
-  z-index: 1000;
+  z-index: 9999;
   border: 1px solid var(--border);
   margin-top: 0.5rem;
   transform: translateZ(0);
+  isolation: isolate;
 }
 
 @keyframes slideDown {
@@ -336,9 +339,10 @@ const clearSearch = () => {
   padding: 1.5rem;
   text-align: center;
   color: var(--text-secondary);
-  box-shadow: var(--shadow-lg);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.05);
   border: 1px solid var(--border);
-  z-index: 1000;
+  z-index: 9999;
+  isolation: isolate;
 }
 </style>
 

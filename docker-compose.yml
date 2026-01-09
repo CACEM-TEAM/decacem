@@ -9,8 +9,21 @@ services:
       - 3333:80
     networks:
       - decacem-net
+      - proxy
     environment:
       - NODE_ENV=production
+    #command: bun run dev
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=proxy"
+      - "traefik.http.routers.myspa-secure.entrypoints=websecure"
+      - "traefik.http.routers.myspa-secure.rule=Host(`collecte-dechets.cacem.fr`)"
+      - "traefik.http.services.myspa-secure.loadbalancer.server.port=80"
+      - "traefik.http.routers.myspa-secure.tls=true"
+      - "traefik.http.routers.myspa-secure.tls.certresolver=myresolver"
+    
 
 networks:
   decacem-net:
+  proxy:
+     external: true

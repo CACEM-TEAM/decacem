@@ -314,144 +314,240 @@ watch(() => props.selectedAddress, () => {
 
 .legend-top {
   margin: 0;
-  padding: 0.5rem 0.75rem;
-  background: #f8fafc;
-  border-radius: 6px;
-  border: 1px solid var(--border);
+  padding: 0.75rem 1rem;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border-radius: 8px;
+  border: 1.5px solid var(--border);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .calendar-wrapper {
   flex: 1;
   background: #ffffff;
-  border-radius: 8px;
-  padding: 1rem;
-  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.25rem;
+  border: 1.5px solid var(--border);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
 .calendar-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 0.75rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid var(--border);
 }
 
 .nav-button {
   background: #ffffff;
   color: var(--text-primary);
-  border: 1px solid var(--border);
-  width: 28px;
-  height: 28px;
-  border-radius: 4px;
+  border: 1.5px solid var(--border);
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   padding: 0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 
 .nav-button:hover {
   background: var(--primary);
   color: white;
   border-color: var(--primary);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
+}
+
+.nav-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(249, 115, 22, 0.2);
 }
 
 .nav-button svg {
-  width: 16px;
-  height: 16px;
+  width: 18px;
+  height: 18px;
 }
 
 .month-year {
-  font-size: 0.95rem;
-  font-weight: 600;
+  font-size: 1.1rem;
+  font-weight: 700;
   color: var(--text-primary);
+  letter-spacing: 0.3px;
 }
 
 .calendar-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 0.25rem;
+  gap: 0.5rem;
 }
 
 .day-header {
   text-align: center;
   font-weight: 600;
   color: var(--text-secondary);
-  padding: 0.25rem;
-  font-size: 0.75rem;
+  padding: 0.5rem 0.25rem;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  opacity: 0.8;
 }
 
 .calendar-day {
   aspect-ratio: 1;
   background: var(--bg-secondary);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: 0.25rem;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  padding: 0.35rem;
   display: flex;
   flex-direction: column;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   justify-content: space-between;
   min-height: 0;
+  overflow: hidden;
+}
+
+.calendar-day::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, transparent 0%, rgba(255, 255, 255, 0.05) 100%);
+  opacity: 0;
+  transition: opacity 0.25s;
+  pointer-events: none;
 }
 
 .calendar-day:hover {
   background: var(--bg-hover);
   border-color: var(--primary);
   transform: translateY(-2px);
-  box-shadow: var(--shadow);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.calendar-day:hover::before {
+  opacity: 1;
 }
 
 .calendar-day.other-month {
-  opacity: 0.3;
+  opacity: 0.35;
   background: var(--bg-primary);
-}
-
-.calendar-day.today {
-  border-color: var(--primary);
-  background: linear-gradient(135deg, rgba(249, 115, 22, 0.15) 0%, rgba(251, 146, 60, 0.1) 100%);
-  font-weight: 700;
-  box-shadow: var(--shadow);
 }
 
 .calendar-day.has-collection {
   border-color: var(--primary);
-  background: linear-gradient(135deg, rgba(249, 115, 22, 0.08) 0%, rgba(251, 146, 60, 0.05) 100%);
-  box-shadow: var(--shadow-sm);
+  border-width: 1.5px;
+  background: linear-gradient(135deg, rgba(249, 115, 22, 0.1) 0%, rgba(251, 146, 60, 0.06) 100%);
+  box-shadow: 0 2px 6px rgba(249, 115, 22, 0.15);
+}
+
+/* Style pour la date du jour - Design moderne avec tons bleu/turquoise */
+.calendar-day.today {
+  border-color: #4a90e2 !important;
+  border-width: 2px !important;
+  background: linear-gradient(135deg, rgba(135, 201, 255, 0.25) 0%, rgba(72, 187, 221, 0.15) 100%) !important;
+  font-weight: 700;
+  box-shadow: 0 4px 16px rgba(74, 144, 226, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
+  position: relative;
+}
+
+.calendar-day.today::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #4a90e2 0%, #48bbdd 100%);
+  border-radius: 8px 8px 0 0;
+}
+
+/* Quand c'est à la fois today et has-collection - Style enrichi */
+.calendar-day.today.has-collection {
+  border-color: #2c5aa0 !important;
+  border-width: 2px !important;
+  background: linear-gradient(135deg, rgba(134, 173, 181, 0.28) 0%, rgba(102, 145, 157, 0.18) 100%) !important;
+  box-shadow: 0 4px 18px rgba(44, 90, 160, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.35) !important;
+}
+
+.calendar-day.today.has-collection::after {
+  background: linear-gradient(90deg, #2c5aa0 0%, #66919d 100%);
+  height: 3px;
+}
+
+/* Style pour le numéro du jour du jour - Couleur harmonisée */
+.calendar-day.today .day-number {
+  color: #2c5aa0 !important;
+  font-weight: 800 !important;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+  font-size: 0.8rem;
+}
+
+/* Hover pour la date du jour - Transition douce */
+.calendar-day.today:hover {
+  border-color: #357abd !important;
+  background: linear-gradient(135deg, rgba(135, 201, 255, 0.35) 0%, rgba(72, 187, 221, 0.22) 100%) !important;
+  box-shadow: 0 6px 20px rgba(74, 144, 226, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.4) !important;
+  transform: translateY(-3px) scale(1.02);
+}
+
+.calendar-day.today.has-collection:hover {
+  border-color: #1e4070 !important;
+  background: linear-gradient(135deg, rgba(134, 173, 181, 0.38) 0%, rgba(102, 145, 157, 0.25) 100%) !important;
+  box-shadow: 0 6px 22px rgba(44, 90, 160, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.4) !important;
+  transform: translateY(-3px) scale(1.02);
 }
 
 .day-number {
   font-weight: 600;
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   color: var(--text-primary);
-  line-height: 1;
+  line-height: 1.2;
   margin-bottom: auto;
+  transition: all 0.2s;
+  z-index: 1;
+  position: relative;
+}
+
+.calendar-day:hover .day-number:not(.calendar-day.today .day-number) {
+  color: var(--primary);
+  font-weight: 700;
 }
 
 .day-collections {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.2rem;
+  gap: 0.25rem;
   justify-content: center;
   align-items: center;
   margin-top: auto;
-  padding-top: 0.125rem;
+  padding-top: 0.2rem;
+  z-index: 1;
+  position: relative;
 }
 
 .collection-dot {
-  width: 8px;
-  height: 8px;
+  width: 9px;
+  height: 9px;
   border-radius: 50%;
   flex-shrink: 0;
-  box-shadow: 0 1px 3px currentColor;
-  transition: all 0.2s;
-  border: 1px solid rgba(255, 255, 255, 0.8);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2), 0 0 0 1.5px rgba(255, 255, 255, 0.9);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1.5px solid rgba(255, 255, 255, 0.95);
+  cursor: pointer;
 }
 
 .collection-dot:hover {
-  transform: scale(1.6);
-  box-shadow: 0 4px 12px currentColor, 0 0 0 3px rgba(255, 255, 255, 0.9);
+  transform: scale(1.8);
+  box-shadow: 0 4px 16px currentColor, 0 0 0 4px rgba(255, 255, 255, 0.95);
   z-index: 10;
 }
 
@@ -500,10 +596,12 @@ watch(() => props.selectedAddress, () => {
 }
 
 .legend-color {
-  width: 12px;
-  height: 12px;
-  border-radius: 3px;
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
   flex-shrink: 0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.5);
 }
 
 @media (max-width: 768px) {
