@@ -408,13 +408,13 @@ watch(() => props.selectedAddress, () => {
   background: var(--bg-primary);
 }
 
-.calendar-day.today {
-  border-color: var(--primary);
-  background: linear-gradient(135deg, rgba(249, 115, 22, 0.15) 0%, rgba(251, 146, 60, 0.1) 100%);
-  font-weight: 700;
-  box-shadow: var(--shadow);
+  .calendar-day.today {
+    border-color: #5a818f5e;
+    background: linear-gradient(135deg, #b7c6cdfc 0%, rgb(217 253 255 / 10%) 100%);
+    font-weight: 700;
+    box-shadow: var(--shadow);
 }
-
+  
 .calendar-day.has-collection {
   border-color: var(--primary);
   background: linear-gradient(135deg, rgba(249, 115, 22, 0.08) 0%, rgba(251, 146, 60, 0.05) 100%);
