@@ -11,10 +11,6 @@ services:
     networks:
       - decacem-net
       - proxy
-    volumes:
-      - .:/app
-      - /app/node_modules
-      - /app/dist
     environment:
       - NODE_ENV=production
     #command: bun run dev

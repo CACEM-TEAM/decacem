@@ -10,20 +10,22 @@ COPY package.json bun.lockb ./
 # Install the app dependencies
 RUN bun install
 
-
 # Copy the rest of the app files to the working directory
 COPY . .
-# Build the Remix app
 
+# Build the Vue.js/Vite app
 RUN bun run build
 
-
-EXPOSE 80
-
-
+# Production stage with nginx
 FROM nginx:stable-alpine as production-stage
 
+# Copy the built files from the build stage
 COPY --from=build /app/dist /usr/share/nginx/html
+
+# Copy custom nginx configuration
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+# Expose port 80 (nginx default port)
 EXPOSE 80
 
 CMD ["nginx", "-g", "daemon off;"]
