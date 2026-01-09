@@ -26,7 +26,7 @@
           <ChevronLeft />
         </button>
         <div class="month-year">
-          {{ currentMonthName }} {{ currentYear }}
+          {{ isMobile ? currentMonthName : `${currentMonthName} ${currentYear}` }}
         </div>
         <button @click="nextMonth" class="nav-button">
           <ChevronRight />
@@ -465,11 +465,11 @@ onBeforeUnmount(() => {
 }
 
 .nav-button:hover {
-  background: var(--primary);
+  background: #000000;
   color: white;
   border-color: var(--primary);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
+  box-shadow: 0 4px 12px rgb(255 255 255 / 30%);
 }
 
 .nav-button:active {

@@ -6,9 +6,9 @@
 
 :root {
   /* Palette de couleurs moderne et sophistiquée */
-  --primary: #828989;
-  --primary-dark: #3e3e3e;
-  --primary-light: #868686;
+  --primary: #e7e7e7;
+  --primary-dark: #ffffff;
+  --primary-light: #e7e7e7;
   --primary-gradient: linear-gradient(135deg, #f97316 0%, #fb923c 100%);
   --secondary: #ec4899;
   --danger: #ef4444;
