@@ -1,145 +1,174 @@
-:root {
-  font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif!important;
-  line-height: 1.5!important;
-  font-weight: 400!important;
-  --el-color-primary: #78aaa6!important;
-  --vc-header-arrow-color: #ffffff!important;
-  --vc-header-title-color: #ffffff!important;
-  --vc-text-sm: 14px!important;
-  --vc-text-lg: 18px!important;
-  --vc-font-bold: 700!important;
-  --vc-font-semibold: 600!important;
-  --vc-leading-snug: 1.375!important;
-  color-scheme: light dark!important;
-  color: rgba(255, 255, 255, 0.87)!important;
-  background-color: #242424!important;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
-  font-synthesis: none!important;
-  text-rendering: optimizeLegibility!important;
-  -webkit-font-smoothing: antialiased!important;
-  -moz-osx-font-smoothing: grayscale!important;
-  -webkit-text-size-adjust: 100%!important;
+:root {
+  /* Palette de couleurs moderne et sophistiquée */
+  --primary: #f97316;
+  --primary-dark: #ea580c;
+  --primary-light: #fb923c;
+  --primary-gradient: linear-gradient(135deg, #f97316 0%, #fb923c 100%);
+  --secondary: #ec4899;
+  --danger: #ef4444;
+  --warning: #f59e0b;
+  --info: #3b82f6;
+  --success: #10b981;
+  
+  /* Arrière-plans avec dégradés subtils */
+  --bg-primary: #f8fafc;
+  --bg-secondary: #ffffff;
+  --bg-card: #ffffff;
+  --bg-hover: #f1f5f9;
+  --bg-input: #f8fafc;
+  --bg-gradient: linear-gradient(135deg, #f97316 0%, #fb923c 100%);
+  --bg-overlay: rgba(255, 255, 255, 0.8);
+  
+  /* Texte avec meilleur contraste */
+  --text-primary: #0f172a;
+  --text-secondary: #64748b;
+  --text-muted: #94a3b8;
+  --text-inverse: #ffffff;
+  
+  /* Bordures plus subtiles */
+  --border: #e2e8f0;
+  --border-light: #f1f5f9;
+  --border-focus: #f97316;
+  
+  /* Ombres modernes avec plus de profondeur */
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  --shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+  
+  /* Rayons de bordure */
+  --radius: 16px;
+  --radius-sm: 12px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+  --radius-2xl: 32px;
+  --radius-full: 9999px;
+  
+  /* Transitions fluides */
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-fast: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  /* Système de breakpoints moderne (mobile-first) */
+  --breakpoint-xs: 480px;
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1536px;
+  
+  /* Container max-widths responsive */
+  --container-xs: 100%;
+  --container-sm: 640px;
+  --container-md: 768px;
+  --container-lg: 1024px;
+  --container-xl: 1280px;
+  --container-2xl: 1400px;
+  
+  /* Espacements fixes et cohérents */
+  --spacing-xs: 0.5rem;
+  --spacing-sm: 0.75rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  
+  /* Typographie simple et lisible */
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
+  --font-size-3xl: 1.875rem;
+  
+  /* Touch targets (minimum 44x44px pour mobile) */
+  --touch-target: 44px;
+  --touch-target-sm: 36px;
 }
 
 body {
-  margin: 0!important;
-  min-width: 340px!important;
-  min-height: 100vh!important;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  background: var(--bg-primary);
+  min-height: 100vh;
+  color: var(--text-primary);
+  line-height: 1.6;
+  font-size: var(--font-size-base);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
 }
 
-.flex-item[data-v-7a7a37b1] {
-  padding: 0px!important;
-  border: 0px!important;
+#app {
+  min-height: 100vh;
+  padding: 0;
+  position: relative;
+  background: var(--bg-primary);
 }
 
-.vc-weekday {
-  text-align: center!important;
-  color: #5c8380!important;
-  font-size: 17px!important;
-  font-weight: 340!important;
-  line-height: 14px!important;
-  padding-top: 7px!important;
-  padding-bottom: 8px!important;
-  cursor: default!important;
-  -webkit-user-select: none!important;
-  -ms-user-select: none!important;
-  user-select: none!important;
+/* Container fluid et responsive */
+.container {
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--spacing-md);
+  padding-right: var(--spacing-md);
 }
 
-.vc-header .vc-arrow {
-  display: flex!important;
-  justify-content: center!important;
-  align-items: center!important;
-  background-color: #58807d!important;
-  color: #ffffff!important; /* Couleur des flèches */
-  padding: 10px!important; /* Ajoute un peu de padding autour des flèches */
-  transition: background-color 0.3s ease!important; /* Ajoute une transition pour un effet de survol plus doux */
-  border: none!important; /* Supprime les bordures */
+@media (min-width: 640px) {
+  .container {
+    max-width: var(--container-sm);
+  }
 }
 
-.vc-header .vc-arrow:focus {
-  outline: none !important;
-  background-color: #00000000!important;
-  color: #fff !important;
-}
-.vc-header .vc-arrow:hover {
-  background-color: #00000000!important;
-  color: #ffffff !important;
+@media (min-width: 768px) {
+  .container {
+    max-width: var(--container-md);
+    padding-left: var(--spacing-lg);
+    padding-right: var(--spacing-lg);
+  }
 }
 
-.vc-header .vc-arrow:hover {
-  background-color: #58807d!important; /* Couleur de fond au survol */
-  color: #000!important; /* Couleur de la flèche au survol */
+@media (min-width: 1024px) {
+  .container {
+    max-width: var(--container-lg);
+  }
 }
 
-.vc-header .vc-arrow:focus {
-  outline: none!important; /* Supprime la couleur de focus par défaut */
-  background-color: #58807d!important; /* Couleur de fond lors du focus */
-  color: #fff!important; /* Couleur de la flèche lors du focus */
+@media (min-width: 1280px) {
+  .container {
+    max-width: var(--container-xl);
+  }
 }
 
-.vc-header .vc-title {
-  color: #fff!important;
-  background-color: #58807d!important;
-  font-weight: 300!important;
+@media (min-width: 1536px) {
+  .container {
+    max-width: var(--container-2xl);
+  }
 }
 
-.vc-header.is-lg {
-  font-size: var(--vc-text-lg)!important;
+/* Utilitaires responsive pour le padding */
+@media (max-width: 768px) {
+  #app {
+    padding: 0;
+  }
+  
+  /* Améliorer les interactions tactiles */
+  button, a, input, select, textarea {
+    touch-action: manipulation;
+  }
+  
+  /* Optimiser le texte pour mobile */
+  body {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
 }
 
-.vc-day {
-  position: relative!important;
-  z-index: 1!important;
-  color: #2f4e4c!important; /* Couleur blanche pour les jours */
-  background-color: #00000000!important; /* Couleur de fond des jours */
-  width: 40px!important; /* Largeur fixe pour les jours */
-  height: 40px!important; /* Hauteur fixe pour les jours */
-  display: flex!important;
-  justify-content: center!important;
-  align-items: center!important;
-  border-radius: 10%!important; /* Légèrement arrondi pour un effet visuel */
-  margin: 2px!important; /* Espacement entre les jours */
-  font-size: 16px!important; /* Taille du texte pour les jours */
-}
-
-.vc-day:hover {
-  background-color: #00000000!important; /* Couleur au survol des jours */
-  color: #000000!important; /* Couleur du texte au survol */
-}
-
-.vc-day.vc-selected {
-  background-color: #00000000!important; /* Couleur des jours sélectionnés */
-  color: #000000!important; /* Couleur du texte des jours sélectionnés */
-}
-
-.vc-nav-item {
-  text-align: center!important;
-  font-weight: var(--vc-font-semibold)!important;
-  line-height: var(--vc-leading-snug)!important;
-  background-color: #2f4e4c!important; /* Couleur de fond des éléments de navigation */
-  color: #ffffff!important; /* Couleur blanche pour le texte de navigation */
-  border-radius: 10px!important; /* Arrondir les éléments de navigation */
-  padding: 5px!important;
-}
-
-.vc-base-icon {
-  fill: #fff!important;
-  background-color: #58807d!important;
-  border-radius: 4px!important;
-}
-
-.vc-expanded {
-  background-color: transparent!important;
-}
-
-.modal-content {
-  box-shadow: 1px 1px 15px 5px #172d2bbf!important;
-  background-color: #ffffff!important; /* Couleur de fond des modales */
-  color: #2f4e4c!important; /* Couleur blanche pour le texte des modales */
-  border-radius: 10px!important; /* Arrondir les modales */
-}
-
-.modal-header {
-  height: 85px!important;
-}

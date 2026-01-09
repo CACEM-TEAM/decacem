@@ -1,15 +1,294 @@
-<!doctype html>
-<html lang="FR">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Collecte des déchets</title>
-    
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="cacem - Consultez les dates de collecte des déchets dans les communes de la Martinique. Recherche d'adresses, calendrier des collectes et carte interactive.">
+  <meta name="theme-color" content="#f97316">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="cacem">
+  <title>cacem</title>
   
-  </head>
-  <body>
-    <div id="app"></div>
-    <script type="module" src="/src/main.js"></script>
+  <!-- Préconnexion uniquement à l'API (ressource critique) -->
+  <link rel="preconnect" href="https://api.cacem.fr" crossorigin>
+  <link rel="dns-prefetch" href="https://api.cacem.fr">
+  <!-- Précharger uniquement le logo si connexion rapide (ressource critique pour le loader) -->
+  <script>
+    // Détecter la connexion avant de précharger le logo
+    let shouldPreloadLogo = true;
+    if ('connection' in navigator) {
+      const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+      if (conn && (conn.effectiveType === 'slow-2g' || conn.effectiveType === '2g' || conn.effectiveType === '3g' || conn.saveData)) {
+        shouldPreloadLogo = false;
+        window._slowConnection = true;
+      }
+    }
+    if (shouldPreloadLogo) {
+      const link = document.createElement('link');
+      link.rel = 'preload';
+      link.href = '/images/caem ani.webp';
+      link.as = 'image';
+      link.type = 'image/webp';
+      link.setAttribute('fetchpriority', 'high');
+      document.head.appendChild(link);
+    }
+  </script>
+  
+  <!-- Charger Leaflet CSS de manière non bloquante et différée -->
+  <link rel="preload" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"></noscript>
+  <!-- Détecter la connexion lente et différer le chargement de Leaflet -->
+  <script>
+    if (!window._slowConnection && 'connection' in navigator) {
+      const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+      if (connection && (connection.effectiveType === 'slow-2g' || connection.effectiveType === '2g' || connection.effectiveType === '3g')) {
+        // Pour les connexions lentes (2G, 3G), charger Leaflet seulement quand nécessaire
+        window._slowConnection = true;
+      }
+    }
+  </script>
+  <style>
+    /* Écran de chargement initial - affiché avant que Vue ne charge */
+    #initial-loader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #ffffff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      color: #565656;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      transition: opacity 0.2s ease-out;
+      padding: 2rem;
+      box-sizing: border-box;
+    }
     
-  </body>
+    .loader-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2rem;
+      max-width: 480px;
+      width: 100%;
+    }
+    
+    #initial-loader.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+    
+    .loader-logo {
+      width: 260px;
+      max-width: 90%;
+      height: auto;
+      object-fit: contain;
+      animation: fadeIn 0.5s ease-in;
+    }
+    
+    .loader-logo[style*="display: none"] {
+      display: none !important;
+    }
+    
+    .loader-status {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.25rem;
+      width: 100%;
+    }
+    
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: scale(0.9);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+    
+    .loader-progress {
+      font-size: 1rem;
+      color: #565656;
+      font-weight: 400;
+      text-align: center;
+      letter-spacing: -0.01em;
+    }
+    
+    .loader-progress-bar {
+      width: 100%;
+      max-width: 280px;
+      height: 4px;
+      background: rgba(86, 86, 86, 0.1);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    
+    .loader-progress-fill {
+      height: 100%;
+      background: #565656;
+      border-radius: 3px;
+      transition: width 0.2s ease;
+    }
+    
+    /* Responsive pour mobile */
+    @media (max-width: 768px) {
+      .loader-content {
+        gap: 1.75rem;
+      }
+      
+      .loader-logo {
+        width: 220px;
+      }
+      
+      .loader-status {
+        gap: 1rem;
+      }
+      
+      .loader-progress {
+        font-size: 0.9375rem;
+      }
+      
+      .loader-progress-bar {
+        max-width: 240px;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .loader-content {
+        gap: 1.5rem;
+      }
+      
+      .loader-logo {
+        width: 180px;
+      }
+      
+      #initial-loader {
+        padding: 1.5rem;
+      }
+    }
+  </style>
+  <!-- Inline critical CSS pour améliorer le First Contentful Paint -->
+  <style id="critical-css">
+    body{margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,Ubuntu,Cantarell,sans-serif;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+    #initial-loader{position:fixed;top:0;left:0;width:100%;height:100%;background:#ffffff;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;color:#565656;padding:2rem;box-sizing:border-box}
+    .loader-content{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2rem;max-width:480px;width:100%}
+    .loader-logo{width:260px;max-width:90%;height:auto;object-fit:contain;animation:fadeIn .5s ease-in}
+    @keyframes fadeIn{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
+    .loader-status{display:flex;flex-direction:column;align-items:center;gap:1.25rem;width:100%}
+  </style>
+</head>
+<body>
+  <!-- Écran de chargement initial -->
+  <div id="initial-loader">
+    <div class="loader-content">
+      <img id="loader-logo-img" alt="CACEM" class="loader-logo" width="280" height="auto" />
+      <div class="loader-status">
+        <div class="loader-progress" id="loader-progress-text">Veuillez patienter, les résultats se chargent...</div>
+        <div class="loader-progress-bar">
+          <div class="loader-progress-fill" id="loader-progress-fill" style="width: 0%"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Script pour charger le logo seulement si connexion rapide -->
+  <script>
+    (function() {
+      // Ne charger le logo que si la connexion n'est pas lente
+      if (!window._slowConnection) {
+        const logoImg = document.getElementById('loader-logo-img');
+        if (logoImg) {
+          logoImg.src = '/images/caem ani.webp';
+          logoImg.loading = 'eager';
+          logoImg.setAttribute('fetchpriority', 'high');
+        }
+      } else {
+        // Masquer le logo si connexion lente
+        const logoImg = document.getElementById('loader-logo-img');
+        if (logoImg) {
+          logoImg.style.display = 'none';
+        }
+      }
+    })();
+  </script>
+  
+  <div id="app"></div>
+  
+  <!-- Script inline pour démarrer les appels API IMMÉDIATEMENT -->
+  <script>
+    // Démarrer les appels API dès que possible, avant même que Vue charge
+    (function() {
+      // Vérifier le cache instantanément
+      let cachedData = null
+      try {
+        const cached = localStorage.getItem('dechets_passages_cache')
+        if (cached) {
+          const cacheData = JSON.parse(cached)
+          if (cacheData.version === '1.0.0') {
+            const age = Date.now() - cacheData.timestamp
+            if (age <= 24 * 60 * 60 * 1000) {
+              cachedData = cacheData.data
+            }
+          }
+        }
+      } catch {}
+      
+      // Si pas de cache, précharger les données API immédiatement
+      // Mais seulement si la connexion n'est pas trop lente
+      if (!cachedData || cachedData.length === 0) {
+        let shouldPreload = true
+        // Vérifier la connexion avant de précharger
+        if ('connection' in navigator) {
+          const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection
+          if (conn && (conn.effectiveType === 'slow-2g' || conn.effectiveType === '2g' || conn.saveData)) {
+            shouldPreload = false
+          }
+        }
+        
+        if (shouldPreload) {
+          // Lancer la première requête API AVANT que le module principal charge
+          const controller = new AbortController()
+          window._apiPreloadPromise = fetch('https://api.cacem.fr/api/v2/dechets/passages?$limit=5000&$skip=0', {
+            method: 'GET',
+            headers: { 'Accept': 'application/json' },
+            signal: controller.signal
+          }).catch(() => null)
+          window._apiPreloadController = controller
+        }
+      }
+    })()
+  </script>
+  
+  <!-- Script pour charger les styles non critiques de manière asynchrone -->
+  <script>
+    // Polyfill pour preload CSS
+    !function(e){"use strict";var t=function(t,n,o){var i,r=e.document,a=r.createElement("link");if(n)i=n;else{var l=(r.body||r.getElementsByTagName("head")[0]).childNodes;i=l[l.length-1]}var d=r.styleSheets;a.rel="stylesheet",a.href=t,a.media="only x",function e(t){if(r.body)return t();setTimeout(function(){e(t)})}(function(){i.parentNode.insertBefore(a,n?i:i.nextSibling)});var f=function(e){for(var t=a.href,n=d.length;n--;)if(d[n].href===t)return e();setTimeout(function(){f(e)})};return a.addEventListener&&a.addEventListener("load",function(){this.media=o||"all"}),a.onloadcssdefined=f,f(function(){a.media!==o&&(a.media=o||"all")}),a};"undefined"!=typeof exports?exports.loadCSS=t:e.loadCSS=t}("undefined"!=typeof global?global:this);
+  </script>
+  
+  <script type="module" src="/src/main.js"></script>
+  
+  <!-- Optimisation: réduire le layout shift avec un placeholder -->
+  <script>
+    // Prévenir le Cumulative Layout Shift (CLS)
+    document.addEventListener('DOMContentLoaded', function() {
+      // S'assurer que le loader a une hauteur minimale
+      const loader = document.getElementById('initial-loader');
+      if (loader) {
+        loader.style.minHeight = window.innerHeight + 'px';
+      }
+    });
+  </script>
+</body>
 </html>
+
+

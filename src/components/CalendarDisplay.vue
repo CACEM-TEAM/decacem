@@ -1,0 +1,533 @@
+<template>
+  <div class="calendar-container">
+    <div class="calendar-header-section">
+      <h3 class="calendar-title">
+        <Calendar class="title-icon" />
+        Calendrier de Collecte
+      </h3>
+      
+      <div class="legend legend-top">
+        <div class="legend-items">
+          <div
+            v-for="flux in uniqueFluxes"
+            :key="flux"
+            class="legend-item"
+          >
+            <span class="legend-color" :class="getFluxClass(flux)"></span>
+            <span>{{ flux }} - {{ getFluxLabel(flux) }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="calendar-wrapper">
+      <div class="calendar-header">
+        <button @click="previousMonth" class="nav-button">
+          <ChevronLeft />
+        </button>
+        <div class="month-year">
+          {{ currentMonthName }} {{ currentYear }}
+        </div>
+        <button @click="nextMonth" class="nav-button">
+          <ChevronRight />
+        </button>
+      </div>
+
+      <div class="calendar-grid">
+        <div class="day-header" v-for="day in daysOfWeek" :key="day">
+          {{ day }}
+        </div>
+        
+         <div
+           v-for="(day, index) in calendarDays"
+           :key="index"
+           class="calendar-day"
+           :class="{
+             'other-month': !day.isCurrentMonth,
+             'today': day.isToday,
+             'has-collection': day.collections.length > 0
+           }"
+         >
+           <div class="day-number">{{ day.day }}</div>
+           <div v-if="day.collections.length > 0" class="day-collections">
+             <div
+               v-for="(collection, idx) in day.collections"
+               :key="idx"
+               class="collection-dot"
+               :class="getFluxClass(collection.FLUX)"
+               :title="`${collection.FLUX} - ${getFluxLabel(collection.FLUX)}`"
+             ></div>
+           </div>
+         </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { ref, computed, watch } from 'vue'
+import { Calendar, ChevronLeft, ChevronRight } from 'lucide-vue-next'
+
+const props = defineProps({
+  collectionData: {
+    type: Array,
+    default: () => []
+  },
+  selectedAddress: {
+    type: Object,
+    default: null
+  }
+})
+
+const currentDate = ref(new Date())
+const currentMonth = ref(new Date().getMonth())
+const currentYear = ref(new Date().getFullYear())
+
+const daysOfWeek = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim']
+
+const currentMonthName = computed(() => {
+  const months = [
+    'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
+    'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'
+  ]
+  return months[currentMonth.value]
+})
+
+const uniqueFluxes = computed(() => {
+  const fluxes = new Set()
+  props.collectionData.forEach(item => {
+    fluxes.add(item.FLUX)
+  })
+  return Array.from(fluxes)
+})
+
+const parseDate = (dateString) => {
+  // Format: "12-11-2025"
+  const [day, month, year] = dateString.split('-').map(Number)
+  return new Date(year, month - 1, day)
+}
+
+const isSameDay = (date1, date2) => {
+  return date1.getDate() === date2.getDate() &&
+         date1.getMonth() === date2.getMonth() &&
+         date1.getFullYear() === date2.getFullYear()
+}
+
+const getDayOfWeekName = (date) => {
+  const days = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi']
+  return days[date.getDay()]
+}
+
+const isWeekEven = (date) => {
+  // Calculer le numéro de semaine ISO (semaine commence le lundi)
+  const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()))
+  const dayNum = d.getUTCDay() || 7
+  d.setUTCDate(d.getUTCDate() + 4 - dayNum)
+  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1))
+  const weekNo = Math.ceil((((d - yearStart) / 86400000) + 1) / 7)
+  return weekNo % 2 === 0
+}
+
+const getCollectionsForDate = (date) => {
+  const collections = []
+  const dayOfWeekName = getDayOfWeekName(date)
+  const isEven = isWeekEven(date)
+  
+  props.collectionData.forEach(item => {
+    // Format V2: dates exactes dans semainePaire/semaineImpaire
+    if (item.semainePaire || item.semaineImpaire) {
+      if (isEven && item.semainePaire) {
+        item.semainePaire.forEach(dateStr => {
+          const collectionDate = parseDate(dateStr)
+          if (isSameDay(collectionDate, date)) {
+            collections.push(item)
+          }
+        })
+      }
+      if (!isEven && item.semaineImpaire) {
+        item.semaineImpaire.forEach(dateStr => {
+          const collectionDate = parseDate(dateStr)
+          if (isSameDay(collectionDate, date)) {
+            collections.push(item)
+          }
+        })
+      }
+    }
+    // Format V1: jours de la semaine dans jourSemainePaire/jourSemaineImpaire
+    else if (item.jourSemainePaire || item.jourSemaineImpaire) {
+      if (isEven && item.jourSemainePaire) {
+        const jours = Array.isArray(item.jourSemainePaire) 
+          ? item.jourSemainePaire 
+          : [item.jourSemainePaire]
+        if (jours.includes(dayOfWeekName)) {
+          collections.push(item)
+        }
+      }
+      if (!isEven && item.jourSemaineImpaire) {
+        const jours = Array.isArray(item.jourSemaineImpaire) 
+          ? item.jourSemaineImpaire 
+          : [item.jourSemaineImpaire]
+        if (jours.includes(dayOfWeekName)) {
+          collections.push(item)
+        }
+      }
+    }
+  })
+  
+  return collections
+}
+
+const calendarDays = computed(() => {
+  const year = currentYear.value
+  const month = currentMonth.value
+  
+  // Premier jour du mois
+  const firstDay = new Date(year, month, 1)
+  const lastDay = new Date(year, month + 1, 0)
+  
+  // Jour de la semaine du premier jour (0 = dimanche, on convertit pour lundi = 0)
+  let startDay = firstDay.getDay()
+  startDay = startDay === 0 ? 6 : startDay - 1
+  
+  const days = []
+  const today = new Date()
+  
+  // Jours du mois précédent
+  const prevMonthLastDay = new Date(year, month, 0).getDate()
+  for (let i = startDay - 1; i >= 0; i--) {
+    const day = prevMonthLastDay - i
+    const date = new Date(year, month - 1, day)
+    days.push({
+      day,
+      date,
+      isCurrentMonth: false,
+      isToday: isSameDay(date, today),
+      collections: []
+    })
+  }
+  
+  // Jours du mois actuel
+  for (let day = 1; day <= lastDay.getDate(); day++) {
+    const date = new Date(year, month, day)
+    days.push({
+      day,
+      date,
+      isCurrentMonth: true,
+      isToday: isSameDay(date, today),
+      collections: getCollectionsForDate(date)
+    })
+  }
+  
+  // Jours du mois suivant pour compléter la grille
+  const remainingDays = 42 - days.length // 6 semaines * 7 jours
+  for (let day = 1; day <= remainingDays; day++) {
+    const date = new Date(year, month + 1, day)
+    days.push({
+      day,
+      date,
+      isCurrentMonth: false,
+      isToday: isSameDay(date, today),
+      collections: []
+    })
+  }
+  
+  return days
+})
+
+const getFluxClass = (flux) => {
+  const classes = {
+    'DEEE': 'flux-deee',
+    'DV': 'flux-dv',
+    'ENC': 'flux-enc',
+    'OM': 'flux-om',
+    'RS': 'flux-rs'
+  }
+  return classes[flux] || 'flux-default'
+}
+
+const getFluxLabel = (flux) => {
+  const labels = {
+    'DEEE': 'Équipements Électriques',
+    'DV': 'Déchets Verts',
+    'ENC': 'Encombrants',
+    'OM': 'Ordures Ménagères',
+    'RS': 'Recyclables Secs'
+  }
+  return labels[flux] || flux
+}
+
+const previousMonth = () => {
+  if (currentMonth.value === 0) {
+    currentMonth.value = 11
+    currentYear.value--
+  } else {
+    currentMonth.value--
+  }
+}
+
+const nextMonth = () => {
+  if (currentMonth.value === 11) {
+    currentMonth.value = 0
+    currentYear.value++
+  } else {
+    currentMonth.value++
+  }
+}
+
+watch(() => props.selectedAddress, () => {
+  // Réinitialiser au mois actuel quand l'adresse change
+  const now = new Date()
+  currentMonth.value = now.getMonth()
+  currentYear.value = now.getFullYear()
+})
+</script>
+
+<style scoped>
+.calendar-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.calendar-header-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.calendar-title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.title-icon {
+  width: 1rem;
+  height: 1rem;
+  color: var(--primary);
+}
+
+.legend-top {
+  margin: 0;
+  padding: 0.5rem 0.75rem;
+  background: #f8fafc;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+}
+
+.calendar-wrapper {
+  flex: 1;
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 1rem;
+  border: 1px solid var(--border);
+}
+
+.calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.nav-button {
+  background: #ffffff;
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  width: 28px;
+  height: 28px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  padding: 0;
+}
+
+.nav-button:hover {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+.nav-button svg {
+  width: 16px;
+  height: 16px;
+}
+
+.month-year {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.25rem;
+}
+
+.day-header {
+  text-align: center;
+  font-weight: 600;
+  color: var(--text-secondary);
+  padding: 0.25rem;
+  font-size: 0.75rem;
+}
+
+.calendar-day {
+  aspect-ratio: 1;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.25rem;
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  justify-content: space-between;
+  min-height: 0;
+}
+
+.calendar-day:hover {
+  background: var(--bg-hover);
+  border-color: var(--primary);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+
+.calendar-day.other-month {
+  opacity: 0.3;
+  background: var(--bg-primary);
+}
+
+.calendar-day.today {
+  border-color: var(--primary);
+  background: linear-gradient(135deg, rgba(249, 115, 22, 0.15) 0%, rgba(251, 146, 60, 0.1) 100%);
+  font-weight: 700;
+  box-shadow: var(--shadow);
+}
+
+.calendar-day.has-collection {
+  border-color: var(--primary);
+  background: linear-gradient(135deg, rgba(249, 115, 22, 0.08) 0%, rgba(251, 146, 60, 0.05) 100%);
+  box-shadow: var(--shadow-sm);
+}
+
+.day-number {
+  font-weight: 600;
+  font-size: 0.75rem;
+  color: var(--text-primary);
+  line-height: 1;
+  margin-bottom: auto;
+}
+
+.day-collections {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.2rem;
+  justify-content: center;
+  align-items: center;
+  margin-top: auto;
+  padding-top: 0.125rem;
+}
+
+.collection-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  box-shadow: 0 1px 3px currentColor;
+  transition: all 0.2s;
+  border: 1px solid rgba(255, 255, 255, 0.8);
+}
+
+.collection-dot:hover {
+  transform: scale(1.6);
+  box-shadow: 0 4px 12px currentColor, 0 0 0 3px rgba(255, 255, 255, 0.9);
+  z-index: 10;
+}
+
+.flux-deee {
+  background: #f97316;
+  color: #f97316;
+}
+
+.flux-dv {
+  background: #1db954;
+  color: #1db954;
+}
+
+.flux-enc {
+  background: #ffa502;
+  color: #ffa502;
+}
+
+.flux-om {
+  background: #5352ed;
+  color: #5352ed;
+}
+
+.flux-rs {
+  background: #ff4757;
+  color: #ff4757;
+}
+
+.flux-default {
+  background: var(--text-secondary);
+  color: var(--text-secondary);
+}
+
+.legend-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.75rem;
+  color: var(--text-primary);
+}
+
+.legend-color {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+  .calendar-wrapper {
+    padding: 0.75rem;
+  }
+  
+  .calendar-header {
+    margin-bottom: 0.5rem;
+  }
+  
+  .calendar-day {
+    padding: 0.125rem;
+  }
+  
+  .day-number {
+    font-size: 0.7rem;
+  }
+  
+  .collection-dot {
+    width: 6px;
+    height: 6px;
+  }
+}
+</style>
+
+ 
