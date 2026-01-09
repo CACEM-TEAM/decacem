@@ -409,8 +409,8 @@ watch(() => props.selectedAddress, () => {
 }
 
   .calendar-day.today {
-    border-color: #5a818f5e;
-    background: linear-gradient(135deg, #b7c6cdfc 0%, rgb(217 253 255 / 10%) 100%);
+    border-color: #5a818f5e!important;
+    background: linear-gradient(135deg, #b7c6cdfc 0%, rgb(217 253 255 / 10%) 100%)!important;
     font-weight: 700;
     box-shadow: var(--shadow);
 }
