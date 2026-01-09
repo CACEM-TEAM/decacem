@@ -26,4 +26,8 @@ services:
 networks:
   decacem-net:
   proxy:
+<<<<<<< HEAD
      external: true
+=======
+     external: true
+>>>>>>> a93e9d5e87b2adb9824b8934f5048f0ccea8f3b2

@@ -442,6 +442,16 @@ watch(() => props.selectedAddress, () => {
   background: var(--bg-primary);
 }
 
+<<<<<<< HEAD
+=======
+  .calendar-day.today {
+    border-color: #5a818f5e!important;
+    background: linear-gradient(135deg, #b7c6cdfc 0%, rgb(217 253 255 / 10%) 100%)!important;
+    font-weight: 700;
+    box-shadow: var(--shadow);
+}
+  
+>>>>>>> a93e9d5e87b2adb9824b8934f5048f0ccea8f3b2
 .calendar-day.has-collection {
   border-color: var(--primary);
   border-width: 1.5px;
